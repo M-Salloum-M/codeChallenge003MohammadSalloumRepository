@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -23,6 +24,11 @@ public class CustomerController {
     List<Customer> getAll(){
         List<Customer> customers = customerService.findAll();
         return customers;
+    }
+    @GetMapping("/{id}")
+    Optional<Customer> get(@PathVariable UUID id){
+        Optional<Customer> customer = customerService.findById(id);
+        return customer;
     }
 
     @PostMapping
