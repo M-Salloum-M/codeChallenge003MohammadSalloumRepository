@@ -30,5 +30,5 @@ GetAll API which fetches back all customers.
 TESTING
 
 For simplicity only the customer model is tested using AssertEquals method.
-APIs can be tested using REST Assured later...
+APIs can be tested using REST Assured, 3rd party API was tested...
 ************************************************************************************
