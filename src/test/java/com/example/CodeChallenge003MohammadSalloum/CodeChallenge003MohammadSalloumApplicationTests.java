@@ -28,7 +28,7 @@ class CodeChallenge003MohammadSalloumApplicationTests {
 		assertEquals("mohammad", customer.getName());
 	}
 	@Test
-	public void GetWeatherDetails()
+	public void CheckValidationAPI()
 	{
 		// Specify the base URL to the RESTful web service
 		RestAssured.baseURI = "https://phonevalidation.abstractapi.com/v1/";
