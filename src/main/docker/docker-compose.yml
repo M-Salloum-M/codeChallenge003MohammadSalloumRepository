@@ -8,6 +8,7 @@ services:
     container_name: app
     ports:
      - "127.0.0.1:8080:8080"
+
     depends_on:
       - db
     environment:
@@ -23,3 +24,18 @@ services:
       - POSTGRES_DB=codeChallenge003Database
       - POSTGRES_USER=mohammad
       - POSTGRES_PASSWORD=codeChallenge
+
+  rabbitmq:
+      image: "rabbitmq:3-management"
+      container_name: "rmq3"
+      restart: "no"
+      environment:
+        RABBITMQ_DEFAULT_USER: "guest"
+        RABBITMQ_DEFAULT_PASS: "guest"
+      labels:
+        NAME: "rabbitmq1"
+      ports:
+        - "5672:5672"
+        - "15672:15672"
+
+

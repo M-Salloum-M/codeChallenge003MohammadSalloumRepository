@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CodeChallenge003MohammadSalloumApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CodeChallenge003MohammadSalloumApplication.class, args);
+		SpringApplication.run(CodeChallenge003MohammadSalloumApplication.class);
+	}
 	}
 
-}
