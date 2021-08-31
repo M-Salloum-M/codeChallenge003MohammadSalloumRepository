@@ -5,23 +5,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
+import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.UUID;
 import javax.validation.constraints.Pattern;
 
-@Entity
+//@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "customer")
-public class Customer {
+@RedisHash("CUSTOMER")
+//@Table(name = "customer")
 
+public class Customer implements Serializable {
+//    private static final long serialVersionUID = -8271783343856328980L;
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @Type(type = "pg-uuid")
-    private UUID id;
+    private String id;
 
     @Column(nullable = false)
     private String name;
@@ -32,6 +34,4 @@ public class Customer {
     @Pattern(regexp = "^[+0-9-]*$")
     @Column(nullable = false)
     private String mobileNumber;
-
-
 }

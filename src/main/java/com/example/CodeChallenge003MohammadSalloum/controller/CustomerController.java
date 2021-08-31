@@ -1,16 +1,18 @@
 package com.example.CodeChallenge003MohammadSalloum.controller;
 
 import com.example.CodeChallenge003MohammadSalloum.model.Customer;
-import com.example.CodeChallenge003MohammadSalloum.service.CustomerService;
+//import com.example.CodeChallenge003MohammadSalloum.RedisCustomerRepository;
+import com.example.CodeChallenge003MohammadSalloum.repository.RedisCustomerRepository;
+//import com.example.CodeChallenge003MohammadSalloum.service.CustomerService;
 import com.example.CodeChallenge003MohammadSalloum.service.RabbitMQSender;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,49 +21,70 @@ import java.util.UUID;
 public class CustomerController {
 
 
-    @Autowired
-    CustomerService customerService;
+//    @Autowired
+//    CustomerService customerService;
     @Autowired
     ValidateNumberController validateNumberController;
     @Autowired
     RabbitMQSender rabbitMQSender;
+    @Autowired
+    RedisCustomerRepository redisCustomerRepository;
 
-    @Cacheable(value = "customers", key = "#id")
-    @GetMapping("/getAll")
-    List<Customer> getAll() {
-        List<Customer> customers = customerService.findAll();
-        return customers;
+    public CustomerController(RedisCustomerRepository redisCustomerRepository) {
+        this.redisCustomerRepository = redisCustomerRepository;
     }
-    @Cacheable(value = "customers", key = "#id")
+
+//    @Cacheable(value = "customers", key = "#id")
+    @GetMapping("/getAll")
+    Iterable<Customer> getAll() {
+//        List<Customer> customers = customerService.findAll();
+
+        return redisCustomerRepository.findAll();
+    }
+//    @Cacheable(value = "customers", key = "#id")
     @GetMapping("/{id}")
-    Optional<Customer> get(@PathVariable UUID id) {
-        Optional<Customer> customer = customerService.findById(id);
+    Optional<Customer> get(@PathVariable String id) {
+       // Optional<Customer> customer = customerService.findById(id);
+        Optional<Customer> customer = redisCustomerRepository.findById(id);
         return customer;
     }
-    @CachePut(value = "customers", key = "#id")
+//    @CachePut(value = "customers", key = "#id")
     @PostMapping
-    Customer newOne(@RequestBody Customer t) {
+    void newOne(@RequestBody Customer t) {
         ResponseEntity<?> responseEntity = validateNumberController.validate(t.getMobileNumber());
         if (responseEntity.getStatusCode().isError()) {
-            return null;
+            System.out.println("ERROR");
+//            return null;
         } else {
             rabbitMQSender.send(t);
-            return customerService.save(t);
+            redisCustomerRepository.save(t);
+            System.out.println(t.toString());
+            //return customerService.save(t);
+
         }
     }
-    @CachePut(value = "customers", key = "#customers.id")
+//    @CachePut(value = "customers", key = "#customers.id")
     @PutMapping
-    Customer update(@RequestBody Customer t) {
+    void update(@RequestBody Customer t) {
         ResponseEntity<?> responseEntity = validateNumberController.validate(t.getMobileNumber());
         if (responseEntity.getStatusCode().isError()) {
-            return null;
-        } else
-            return customerService.save(t);
+            System.out.println("ERROR");
+//            return null;
+        } else{
+            rabbitMQSender.send(t);
+            redisCustomerRepository.save(t);
+            System.out.println(t.toString());
+        }
+            //return customerService.save(t);
     }
-    @CacheEvict(value = "customers", allEntries=true)
+//    @CacheEvict(value = "customers", allEntries=true)
     @DeleteMapping("/{id}")
-    void delete(@PathVariable UUID id) {
-        customerService.deleteById(id);
+    void delete(@PathVariable String id) {
+        Optional<Customer> customer = redisCustomerRepository.findById(id);
+
+//        customerService.deleteById(id);
+        redisCustomerRepository.delete(customer.get());
+        System.out.println(id+" Deleted");
     }
 
 
